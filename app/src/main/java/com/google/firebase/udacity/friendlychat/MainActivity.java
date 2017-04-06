@@ -41,8 +41,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
@@ -70,7 +68,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     private ListView mMessageListView;
-    private MessageAdapter mMessageAdapter;
+    //private MessageAdapter mMessageAdapter;
+    private ListAdpater mListMessageAdapter;
     private ProgressBar mProgressBar;
     private ImageButton mPhotoPickerButton;
     private EditText mMessageEditText;
@@ -115,8 +114,11 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize message ListView and its adapter
         List<FriendlyMessage> friendlyMessages = new ArrayList<>();
-        mMessageAdapter = new MessageAdapter(this, R.layout.item_message, friendlyMessages);
-        mMessageListView.setAdapter(mMessageAdapter);
+        // mMessageAdapter = new MessageAdapter(this, R.layout.item_message, friendlyMessages);
+        // mMessageListView.setAdapter(mMessageAdapter);
+
+        mListMessageAdapter = new ListAdpater(this, FriendlyMessage.class, R.layout.item_message, mMessagesDatabaseReference );
+        mMessageListView.setAdapter(mListMessageAdapter);
 
         // Initialize progress bar
         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
@@ -298,24 +300,27 @@ public class MainActivity extends AppCompatActivity {
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
-        deAttachDatabaseReadListener();
-        mMessageAdapter.clear();
+        // deAttachDatabaseReadListener();
+        // mMessageAdapter.clear();
     }
 
     public void onSinedInInInitialise(String userName){
         mUsername = userName;
-        attachDatabaseReadListener();
+        // attachDatabaseReadListener();
     }
 
     public void onSignedOutCleanUp(){
         mUsername = ANONYMOUS;
-        if (mMessageAdapter != null) {
+        /*if (mMessageAdapter != null) {
             mMessageAdapter.clear();
+        }*/
+        if (mListMessageAdapter != null) {
+            mListMessageAdapter.cleanup();
         }
-        deAttachDatabaseReadListener();
+        // deAttachDatabaseReadListener();
     }
 
-    void attachDatabaseReadListener(){
+    /*void attachDatabaseReadListener(){
         if (mchildChildEventListener == null) {
             mchildChildEventListener = new ChildEventListener() {
                 @Override
@@ -346,12 +351,12 @@ public class MainActivity extends AppCompatActivity {
             };
             mMessagesDatabaseReference.addChildEventListener(mchildChildEventListener);
         }
-    }
+    }*/
 
-    void deAttachDatabaseReadListener(){
+    /*void deAttachDatabaseReadListener(){
         if (mchildChildEventListener != null) {
             mMessagesDatabaseReference.removeEventListener(mchildChildEventListener);
             mchildChildEventListener = null;
         }
-    }
+    }*/
 }
